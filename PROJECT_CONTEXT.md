@@ -33,18 +33,18 @@ Match Cynbit's professional, minimalist SaaS style: deep teal (`#00666B`), off-w
 
 - The Git repository is initialized locally at the project root.
 - The `origin` remote is configured as `https://github.com/MohammedQadeer2/cynbit-smart-inquiry`.
-- The current `main` branch has no commits. `git ls-remote --heads origin` returned no branch refs, so there is no evidence of an initial commit pushed to GitHub.
+- The initial `main` branch was empty locally and remotely. The requested initial commit has now been created and pushed; see development progress below.
 - Both `client/` and `server/` exist.
 - The client has React 19 and Vite 8 installed, along with a Vite starter application. It has no Tailwind CSS or Axios dependency at this point.
 - The server has Express 5, Mongoose 9, CORS, dotenv, and nodemon installed. `server.js` currently exposes only `GET /api/health`; there is no inquiry route, model, or database connection yet.
 - The server contains a `.env` file. Its contents are intentionally not recorded or inspected.
-- There is no root `.gitignore`; a server-specific `.gitignore` exists. Add a root ignore file before staging so client dependencies, environment files, and build outputs cannot be accidentally committed.
-- The Vite and Express development servers have not been started or tested as part of this initial inspection.
+- A root `.gitignore` now excludes dependency folders, environment files, build output, logs, and common editor files. Existing client and server ignore files were preserved.
+- The Vite and Express development servers have both passed HTTP smoke tests. The Vite production build also succeeds.
 
 ## Decisions and constraints
 
 - Keep the requested MERN-oriented stack and avoid unnecessary dependencies or architecture.
-- Preserve the existing Git history (currently empty) and never force-push.
+- Preserve the existing Git history and never force-push.
 - Do not modify the original Cynbit website.
 - Do not claim persistence or deployment until those have been implemented and verified.
 - Work in small phases and pause for the user's confirmation before starting each subsequent major phase.
@@ -54,12 +54,19 @@ Match Cynbit's professional, minimalist SaaS style: deep teal (`#00666B`), off-w
 ### Initial inspection
 
 - Confirmed the repository remote, local branch/commit state, project folders, package manifests, installed dependencies, starter frontend, and current health-only backend.
-- No application files have been replaced or modified during this inspection.
-- This context document is the first requested project artifact.
+- Added this context document; no application files were replaced or modified during inspection.
+
+### Phase 1 foundation
+
+- Added the root `.gitignore` and confirmed dependencies, `.env`, build outputs, and local configuration are ignored.
+- Confirmed the configured GitHub remote had no branch refs before the first push. No remote history was overwritten.
+- Staged only the allowlisted source, package manifests/lockfiles, ignore files, and documentation. No `.env` or `node_modules` paths were staged.
+- Created and pushed initial commit `10f1c4935a868f1db8a0c1626047eb53789fde49` (`chore: initialize Cynbit Smart Inquiry project`) to `origin/main`.
+- Verified the Vite development page returned HTTP 200 and contained the application root.
+- Verified `GET /api/health` returned HTTP 200 with `{"success":true,"message":"Cynbit Smart Inquiry API is running!"}`.
+- Verified `npm --prefix client run build` succeeds. Temporary smoke-test server processes were stopped.
 
 ### Next steps
 
-1. Add a root `.gitignore` covering all `node_modules`, environment files, and build outputs; confirm Git status without staging secrets.
-2. Verify whether the configured GitHub repository is empty and agree on the initial commit/push workflow.
-3. Run and verify the existing Vite and Express development servers before application implementation.
-4. Proceed with frontend foundation, then backend, integration, quality/deployment, and assessment documentation in separate confirmed phases.
+- Wait for confirmation before beginning frontend UI development.
+- Future phases: frontend UI, backend inquiry persistence and validation, integration, quality/deployment, and assessment documentation.
