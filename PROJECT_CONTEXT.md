@@ -1,72 +1,79 @@
 # Cynbit Smart Inquiry System
 
-## Project purpose
+## Assessment goal
 
-Build a working prototype for the Cynbit Technologies Full Stack Developer Intern assessment. The prototype improves the existing website's contact journey with a structured, multi-step project inquiry; it does not replace the Cynbit website or add another generic contact form.
+Improve the existing Cynbit website's basic contact journey with a structured, responsive project inquiry prototype. Do not rebuild or modify the original Cynbit website.
 
-## Assessment requirements
+## Product requirements
 
-- Select one of these services: AI Automation, Full-stack Development, Backend Systems, Cloud Infrastructure, or Technical SEO.
-- Collect project description, estimated budget, expected timeline, and project/business type.
-- Collect full name and email; company is optional.
-- Let the visitor review the information before submitting.
-- Show success only after the backend confirms that the inquiry was stored.
-- Validate on both client and server, prevent duplicate submissions, and provide useful loading/error states.
-- Do not expose private inquiries or commit environment secrets.
-- Deliver a GitHub repository, a publicly accessible deployment, and a technical report describing the problem, technology choices, implementation, and results.
+- Four guided steps: service, project requirements, contact information, and review.
+- Services: AI Automation, Full-stack Development, Backend Systems, Cloud Infrastructure, and Technical SEO.
+- Collect a 30–2,000 character project description, budget, timeline, project type, full name, valid email, optional company, and industry.
+- Preserve values when navigating between steps and provide editable review, loading, validation, error, and database-confirmed success states.
+- Store inquiries with MongoDB/Mongoose. Never return private inquiry records from a public listing endpoint.
+- Validate on frontend and backend, limit request size, use rate limiting/security middleware, and restrict browser origins.
 
-## Design direction
+## Design and architecture decisions
 
-Match Cynbit's professional, minimalist SaaS style: deep teal (`#00666B`), off-white/light grey (`#F2F6F5`), charcoal (`#171D1D`), and white (`#FFFFFF`). Use responsive layouts, rounded cards, subtle shadows, accessible labels and keyboard navigation, and clear step progress. Avoid unrelated visuals, stock photography, and excessive animation.
+- Palette: teal `#00666B`, background `#F2F6F5`, charcoal `#171D1D`, white cards.
+- Client: React 19, Vite 8, JavaScript, custom responsive CSS, Axios, and React Hooks. No Tailwind or router was added because custom CSS and a single-page step flow meet the need without extra dependencies.
+- API: Node.js, Express 5, Mongoose 9, CORS, Helmet, express-rate-limit, and dotenv.
+- API endpoints: `GET /api/health`, `POST /api/inquiries`.
+- MongoDB connection string: backend-only `MONGODB_URI`; frontend backend origin: `VITE_API_URL`.
+- Deployment targets: Vercel frontend and Render backend. Public deployment has not been performed or verified.
+- No local `.env` values or credentials are recorded in this file; `server.js` loads environment variables at runtime without printing them.
 
-## Intended architecture
+## Current workspace status
 
-- **Client:** React, Vite, JavaScript, Tailwind CSS, Axios, and React Hooks. Use React Router only if the final page flow needs it.
-- **Server:** Node.js, Express, JavaScript ES modules, REST endpoints, and Mongoose.
-- **Database:** MongoDB Atlas, configured via environment variables.
-- **Deployment target:** Vercel for the frontend and Render for the backend.
-- **API:** `GET /api/health` and `POST /api/inquiries`. The API should validate requests, apply basic rate limiting and security middleware, and never expose stored customer inquiries.
-- **Inquiry data:** full name, email, optional company, service, project description, budget, timeline, project type, and creation time.
-- **Suggested server organization:** `config/`, `controllers/`, `models/`, `routes/`, `middleware/`, and `server.js`.
+- Git remote `origin` points to `https://github.com/MohammedQadeer2/cynbit-smart-inquiry`; branch is `main`.
+- Initial repository commit, Phase 1 documentation commit, and MVP implementation commit `2592cc5` are on `main`; the MVP commit is pending push.
+- Both `client/` and `server/` exist. Root `.gitignore` ignores dependencies, environment files, build output, logs, and common editor files; the placeholder `server/.env.example` is explicitly allowed. Existing client/server ignore files remain.
+- The existing `server/.env` contents were not inspected, printed, or recorded. Running the server entry point reported `database.configured: false` and `database.connected: false`; no Atlas connection or persistence write was attempted.
 
-## Existing workspace findings
+## Implementation progress
 
-- The Git repository is initialized locally at the project root.
-- The `origin` remote is configured as `https://github.com/MohammedQadeer2/cynbit-smart-inquiry`.
-- The initial `main` branch was empty locally and remotely. The requested initial commit has now been created and pushed; see development progress below.
-- Both `client/` and `server/` exist.
-- The client has React 19 and Vite 8 installed, along with a Vite starter application. It has no Tailwind CSS or Axios dependency at this point.
-- The server has Express 5, Mongoose 9, CORS, dotenv, and nodemon installed. `server.js` currently exposes only `GET /api/health`; there is no inquiry route, model, or database connection yet.
-- The server contains a `.env` file. Its contents are intentionally not recorded or inspected.
-- A root `.gitignore` now excludes dependency folders, environment files, build output, logs, and common editor files. Existing client and server ignore files were preserved.
-- The Vite and Express development servers have both passed HTTP smoke tests. The Vite production build also succeeds.
+### Frontend
 
-## Decisions and constraints
+- Replaced the Vite starter screen with a Cynbit-inspired responsive inquiry experience, reusable components, four-step progress, service cards, requirements/contact forms, review/edit, and confirmation view.
+- Added client validation, focus/error accessibility, disabled/loading submit state, duplicate-submit guard, API error display, and an Axios client configured with `VITE_API_URL`.
+- Browser-tested service selection, required-service validation, step navigation, field entry, review, editing requirements without losing values, and the backend-unavailable submission state.
+- At 1440px desktop and 390px mobile viewport sizes, measured document content width equalled the viewport's usable width (no horizontal overflow). Browser reported no uncaught page errors.
+- Vite production build and ESLint pass.
 
-- Keep the requested MERN-oriented stack and avoid unnecessary dependencies or architecture.
-- Preserve the existing Git history and never force-push.
-- Do not modify the original Cynbit website.
-- Do not claim persistence or deployment until those have been implemented and verified.
-- Work in small phases and pause for the user's confirmation before starting each subsequent major phase.
+### Backend
 
-## Development progress
+- Added Express app composition, Mongo connection management, Mongoose inquiry model, controller, routes, request validation, centralized JSON errors, Helmet, restricted CORS, a 10 KB JSON limit, and 10 requests/15-minute inquiry rate limit.
+- Health returns database readiness booleans only. Valid submissions receive HTTP 201 only after Mongoose persistence. Missing or disconnected MongoDB returns HTTP 503; no in-memory fallback or fake success exists.
+- Added six Node tests for health, required fields, email/description validation, valid payload behavior without storage, unknown routes, and rejected CORS origins.
+- `npm --prefix server test`: 6 passed. `npm audit --prefix server`: 0 vulnerabilities after pinning a safe transitive `minimatch` range.
+- The server entry point started and health returned HTTP 200. Database configuration was false; valid persistence has not been exercised.
 
-### Initial inspection
+### Documentation/deployment preparation
 
-- Confirmed the repository remote, local branch/commit state, project folders, package manifests, installed dependencies, starter frontend, and current health-only backend.
-- Added this context document; no application files were replaced or modified during inspection.
+- Root `README.md` documents the problem, features, architecture, setup, environment, API, tests, and Vercel/Render steps.
+- `server/.env.example` contains placeholder MongoDB credentials and local defaults; never commit `server/.env`.
+- Added `render.yaml` for the backend service. Vercel deployment settings are documented in the README.
+- `TECHNICAL_REPORT.md` records assessment framing, implementation choices, verified results, and remaining limitations.
 
-### Phase 1 foundation
+## Verification results
 
-- Added the root `.gitignore` and confirmed dependencies, `.env`, build outputs, and local configuration are ignored.
-- Confirmed the configured GitHub remote had no branch refs before the first push. No remote history was overwritten.
-- Staged only the allowlisted source, package manifests/lockfiles, ignore files, and documentation. No `.env` or `node_modules` paths were staged.
-- Created and pushed initial commit `10f1c4935a868f1db8a0c1626047eb53789fde49` (`chore: initialize Cynbit Smart Inquiry project`) to `origin/main`.
-- Verified the Vite development page returned HTTP 200 and contained the application root.
-- Verified `GET /api/health` returned HTTP 200 with `{"success":true,"message":"Cynbit Smart Inquiry API is running!"}`.
-- Verified `npm --prefix client run build` succeeds. Temporary smoke-test server processes were stopped.
+- `npm --prefix client run lint`: passed.
+- `npm --prefix client run build`: passed.
+- `npm --prefix server test`: 6 passed, 0 failed.
+- `npm audit --prefix server`: 0 vulnerabilities.
+- `npm audit --omit=dev --prefix client`: 0 vulnerabilities.
+- Live backend entry point: HTTP 200 health, MongoDB not configured/connected in the test runtime.
+- Browser UI: tested at desktop and mobile widths; no horizontal overflow. Without MongoDB, the real API's HTTP 503 is shown and success is not displayed.
+- MongoDB persistence and public deployment remain unverified because no Atlas configuration or deployment URLs were available.
 
-### Next steps
+## Remaining work
 
-- Wait for confirmation before beginning frontend UI development.
-- Future phases: frontend UI, backend inquiry persistence and validation, integration, quality/deployment, and assessment documentation.
+1. Configure a real MongoDB Atlas URI in `server/.env` locally and/or Render's secret settings; verify health reports connected and perform a controlled test write/readback.
+2. Deploy backend to Render, set the exact Vercel production origin in `CLIENT_URL`, deploy frontend to Vercel with `VITE_API_URL`, then test a persisted live inquiry.
+3. Record final commit hashes and deployment verification after pushing.
+
+## Constraints
+
+- Do not commit credentials, `node_modules`, or generated build output.
+- Never force-push or overwrite existing Git history.
+- Do not claim MongoDB persistence or deployment until explicitly verified.
