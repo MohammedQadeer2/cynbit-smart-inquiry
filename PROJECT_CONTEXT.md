@@ -26,7 +26,7 @@ Improve the existing Cynbit website's basic contact journey with a structured, r
 ## Current workspace status
 
 - Git remote `origin` points to `https://github.com/MohammedQadeer2/cynbit-smart-inquiry`; branch is `main`.
-- Initial repository commit, Phase 1 documentation commit, and MVP implementation commit `2592cc5` are on `main`; the MVP commit is pending push.
+- Initial repository commit, Phase 1 documentation commit, MVP implementation commit `2592cc5`, and MVP documentation commit `0756b31` are pushed to `origin/main`.
 - Both `client/` and `server/` exist. Root `.gitignore` ignores dependencies, environment files, build output, logs, and common editor files; the placeholder `server/.env.example` is explicitly allowed. Existing client/server ignore files remain.
 - The existing `server/.env` contents were not inspected, printed, or recorded. Running the server entry point reported `database.configured: false` and `database.connected: false`; no Atlas connection or persistence write was attempted.
 
@@ -70,7 +70,7 @@ Improve the existing Cynbit website's basic contact journey with a structured, r
 
 1. Configure a real MongoDB Atlas URI in `server/.env` locally and/or Render's secret settings; verify health reports connected and perform a controlled test write/readback.
 2. Deploy backend to Render, set the exact Vercel production origin in `CLIENT_URL`, deploy frontend to Vercel with `VITE_API_URL`, then test a persisted live inquiry.
-3. Record final commit hashes and deployment verification after pushing.
+3. Record deployment URLs and verify a persisted end-to-end inquiry after the services are configured.
 
 ## Constraints
 
