@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+server/node_modules/http-errors/index.js
+server/node_modules/http-errors/README.md
+
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Build files
+client/dist/
+server/dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor files
+.vscode/
