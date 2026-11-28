@@ -146,8 +146,9 @@ The backend test suite verifies health, required-field and email validation, all
 
 1. Connect the GitHub repository to Render and create a Blueprint from the root `render.yaml`, or create a Node web service with **Root Directory** `server`, **Build Command** `npm ci`, and **Start Command** `npm start`.
 2. Set `MONGODB_URI` to the Atlas connection string. Ensure the Atlas network access rules allow the Render service to connect.
-3. Set `CLIENT_URL` to the exact Vercel production origin, such as `https://your-project.vercel.app` (no trailing slash). Multiple trusted origins can be comma-separated.
+3. In the Render service's **Environment** settings, set `CLIENT_URL` to the exact browser origin `https://cynbit-smart-inquiry1.vercel.app`. Do not add a trailing slash, path, quotes, or whitespace around the URL. The server trims and allows comma-separated exact origins if you also need a preview or custom domain.
 4. Deploy and verify `https://<render-service>.onrender.com/api/health`. Its response should report `database.configured: true` and `database.connected: true`.
+5. After saving an environment-variable change, trigger a Render deploy/redeploy so the running service loads the updated value.
 
 ### Vercel frontend
 
