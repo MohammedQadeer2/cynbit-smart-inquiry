@@ -1,79 +1,53 @@
-# Cynbit Smart Inquiry System
+# Cynbit Smart Inquiry System — Project Context
 
 ## Assessment goal
 
-Improve the existing Cynbit website's basic contact journey with a structured, responsive project inquiry prototype. Do not rebuild or modify the original Cynbit website.
+Improve the existing Cynbit website's basic contact journey with a polished, structured project inquiry. This application is a prototype and does not replace or modify the original Cynbit website.
 
-## Product requirements
+## Product and architecture
 
-- Four guided steps: service, project requirements, contact information, and review.
+- Four guided steps: select service; describe requirements; add contact details; review and submit.
 - Services: AI Automation, Full-stack Development, Backend Systems, Cloud Infrastructure, and Technical SEO.
-- Collect a 30–2,000 character project description, budget, timeline, project type, full name, valid email, optional company, and industry.
-- Preserve values when navigating between steps and provide editable review, loading, validation, error, and database-confirmed success states.
-- Store inquiries with MongoDB/Mongoose. Never return private inquiry records from a public listing endpoint.
-- Validate on frontend and backend, limit request size, use rate limiting/security middleware, and restrict browser origins.
+- Client: React 19, Vite 8, JavaScript, custom responsive CSS, Axios, and React Hooks.
+- API: Node.js, Express 5, JavaScript ES modules, Mongoose 9, CORS, Helmet, express-rate-limit, and dotenv.
+- Database: MongoDB Atlas database `cynbit-smart-inquiry`, collection `inquiries`.
+- Hosting: Vercel frontend and Render backend.
+- API: `GET /api/health`, `POST /api/inquiries`. There is no public inquiry listing endpoint.
+- Backend secrets stay in environment configuration; never put MongoDB credentials in frontend variables or Git.
 
-## Design and architecture decisions
+## Current deployment status
 
-- Palette: teal `#00666B`, background `#F2F6F5`, charcoal `#171D1D`, white cards.
-- Client: React 19, Vite 8, JavaScript, custom responsive CSS, Axios, and React Hooks. No Tailwind or router was added because custom CSS and a single-page step flow meet the need without extra dependencies.
-- API: Node.js, Express 5, Mongoose 9, CORS, Helmet, express-rate-limit, and dotenv.
-- API endpoints: `GET /api/health`, `POST /api/inquiries`.
-- MongoDB connection string: backend-only `MONGODB_URI`; frontend backend origin: `VITE_API_URL`.
-- Deployment targets: Vercel frontend and Render backend. Public deployment has not been performed or verified.
-- No local `.env` values or credentials are recorded in this file; `server.js` loads environment variables at runtime without printing them.
+- Repository: [MohammedQadeer2/cynbit-smart-inquiry](https://github.com/MohammedQadeer2/cynbit-smart-inquiry), branch `main`.
+- Frontend: [https://cynbit-smart-inquiry1.vercel.app](https://cynbit-smart-inquiry1.vercel.app), publicly accessible.
+- Backend: [https://cynbit-smart-inquiry.onrender.com](https://cynbit-smart-inquiry.onrender.com); `GET /api/health` returned HTTP 200.
+- MongoDB Atlas: Render deployment logs confirmed MongoDB connected.
+- Production CORS issue: OPTIONS preflight from `https://cynbit-smart-inquiry1.vercel.app` currently returns HTTP 403 without `Access-Control-Allow-Origin`. Correct Render `CLIENT_URL` to exactly that origin (no trailing slash/path) and redeploy.
+- Do not mark production inquiry submission successful until preflight passes and a controlled inquiry is verified in MongoDB.
 
-## Current workspace status
+## Implementation and verification
 
-- Git remote `origin` points to `https://github.com/MohammedQadeer2/cynbit-smart-inquiry`; branch is `main`.
-- Initial repository commit, Phase 1 documentation commit, MVP implementation commit `2592cc5`, and MVP documentation commit `0756b31` are pushed to `origin/main`.
-- Both `client/` and `server/` exist. Root `.gitignore` ignores dependencies, environment files, build output, logs, and common editor files; the placeholder `server/.env.example` is explicitly allowed. Existing client/server ignore files remain.
-- The existing `server/.env` contents were not inspected, printed, or recorded. Running the server entry point reported `database.configured: false` and `database.connected: false`; no Atlas connection or persistence write was attempted.
+- Frontend includes responsive service cards, project/contact steps, review/edit, field validation, loading/error handling, duplicate-submit protection, and database-confirmed success state.
+- Backend includes Mongoose persistence, server validation, centralized JSON errors, Helmet, exact-origin CORS, 10 KB JSON limit, and 10 requests per 15 minutes on the inquiry route.
+- `npm --prefix server test`: latest CORS regression suite reports 9 passed, 0 failed. It covers health, invalid/missing fields, no fake success when storage is unavailable, unknown route, allowed and rejected origins, comma-separated `CLIENT_URL`, preflight, and local development origin.
+- Previously run frontend ESLint and Vite production build passed. Browser checks exercised the step flow and measured no horizontal overflow at 1440 px desktop and 390 px mobile widths.
+- The production preflight failure means a successful production browser submission and Atlas write/readback have not been verified.
 
-## Implementation progress
+## Documentation
 
-### Frontend
+- `README.md`: installation, environment variables, API, database schema, deployment URLs, tests, current CORS issue, and deployment verification steps.
+- `TECHNICAL_REPORT.md`: assessment report with requirements, architecture diagram, frontend/backend design, data model, API examples, security, test results, deployment status, screenshot placeholders, and limitations.
+- `server/.env.example`: connection-string format with credential placeholders; verify its cluster host and database path. The actual `server/.env` must remain private.
 
-- Replaced the Vite starter screen with a Cynbit-inspired responsive inquiry experience, reusable components, four-step progress, service cards, requirements/contact forms, review/edit, and confirmation view.
-- Added client validation, focus/error accessibility, disabled/loading submit state, duplicate-submit guard, API error display, and an Axios client configured with `VITE_API_URL`.
-- Browser-tested service selection, required-service validation, step navigation, field entry, review, editing requirements without losing values, and the backend-unavailable submission state.
-- At 1440px desktop and 390px mobile viewport sizes, measured document content width equalled the viewport's usable width (no horizontal overflow). Browser reported no uncaught page errors.
-- Vite production build and ESLint pass.
+## Release follow-up
 
-### Backend
+1. In Render's service environment, set `CLIENT_URL=https://cynbit-smart-inquiry1.vercel.app`.
+2. Redeploy the Render service.
+3. Verify `OPTIONS https://cynbit-smart-inquiry.onrender.com/api/inquiries` returns HTTP 204 and the exact `Access-Control-Allow-Origin`.
+4. Submit a controlled test inquiry from Vercel and verify the corresponding Atlas document.
+5. Add genuine screenshots to the assessment if desired; do not fabricate a success screen.
 
-- Added Express app composition, Mongo connection management, Mongoose inquiry model, controller, routes, request validation, centralized JSON errors, Helmet, restricted CORS, a 10 KB JSON limit, and 10 requests/15-minute inquiry rate limit.
-- Health returns database readiness booleans only. Valid submissions receive HTTP 201 only after Mongoose persistence. Missing or disconnected MongoDB returns HTTP 503; no in-memory fallback or fake success exists.
-- Added six Node tests for health, required fields, email/description validation, valid payload behavior without storage, unknown routes, and rejected CORS origins.
-- `npm --prefix server test`: 6 passed. `npm audit --prefix server`: 0 vulnerabilities after pinning a safe transitive `minimatch` range.
-- The server entry point started and health returned HTTP 200. Database configuration was false; valid persistence has not been exercised.
+## Git and safety constraints
 
-### Documentation/deployment preparation
-
-- Root `README.md` documents the problem, features, architecture, setup, environment, API, tests, and Vercel/Render steps.
-- `server/.env.example` contains placeholder MongoDB credentials and local defaults; never commit `server/.env`.
-- Added `render.yaml` for the backend service. Vercel deployment settings are documented in the README.
-- `TECHNICAL_REPORT.md` records assessment framing, implementation choices, verified results, and remaining limitations.
-
-## Verification results
-
-- `npm --prefix client run lint`: passed.
-- `npm --prefix client run build`: passed.
-- `npm --prefix server test`: 6 passed, 0 failed.
-- `npm audit --prefix server`: 0 vulnerabilities.
-- `npm audit --omit=dev --prefix client`: 0 vulnerabilities.
-- Live backend entry point: HTTP 200 health, MongoDB not configured/connected in the test runtime.
-- Browser UI: tested at desktop and mobile widths; no horizontal overflow. Without MongoDB, the real API's HTTP 503 is shown and success is not displayed.
-- MongoDB persistence and public deployment remain unverified because no Atlas configuration or deployment URLs were available.
-
-## Remaining work
-
-1. Configure a real MongoDB Atlas URI in `server/.env` locally and/or Render's secret settings; verify health reports connected and perform a controlled test write/readback.
-2. Deploy backend to Render, set the exact Vercel production origin in `CLIENT_URL`, deploy frontend to Vercel with `VITE_API_URL`, then test a persisted live inquiry.
-3. Record deployment URLs and verify a persisted end-to-end inquiry after the services are configured.
-
-## Constraints
-
-- Do not commit credentials, `node_modules`, or generated build output.
-- Never force-push or overwrite existing Git history.
-- Do not claim MongoDB persistence or deployment until explicitly verified.
+- Preserve existing commits; never force-push.
+- Do not commit `.env`, credentials, dependencies, or generated build output.
+- For documentation-only updates, stage and commit only the documentation requested.
